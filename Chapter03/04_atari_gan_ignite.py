@@ -49,7 +49,7 @@ class InputWrapper(gym.ObservationWrapper):
     def observation(self, observation):
         # resize image
         new_obs = cv2.resize(observation, (IMAGE_SIZE, IMAGE_SIZE))
-        # transform (210, 160, 3) -> (3, 210, 160)
+        # transform (w, h, c) -> (c, w, h)
         new_obs = np.moveaxis(new_obs, 2, 0)
         return new_obs.astype(np.float32)
 
