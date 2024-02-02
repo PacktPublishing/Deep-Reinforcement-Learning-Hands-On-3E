@@ -89,8 +89,8 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
 def filter_batch(batch: tt.List[Episode], percentile: float) -> \
         tt.Tuple[tt.List[Episode], tt.List[np.ndarray],
                  tt.List[int], float]:
-    filter_fun = lambda s: s.reward * (GAMMA ** len(s.steps))
-    disc_rewards = list(map(filter_fun, batch))
+    reward_fun = lambda s: s.reward * (GAMMA ** len(s.steps))
+    disc_rewards = list(map(reward_fun, batch))
     reward_bound = np.percentile(disc_rewards, percentile)
 
     train_obs: tt.List[np.ndarray] = []

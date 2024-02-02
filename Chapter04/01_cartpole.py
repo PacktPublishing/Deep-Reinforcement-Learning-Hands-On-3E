@@ -116,7 +116,7 @@ if __name__ == "__main__":
         writer.add_scalar("loss", loss_v.item(), iter_no)
         writer.add_scalar("reward_bound", reward_b, iter_no)
         writer.add_scalar("reward_mean", reward_m, iter_no)
-        if reward_m > 199:
+        if reward_m > 475:
             print("Solved!")
             break
     writer.close()
