@@ -129,7 +129,6 @@ def batch_to_tensors(batch: tt.List[Experience],
         new_states_t.to(device)
 
 
-
 def calc_loss(batch: tt.List[Experience],
               net: dqn_model.DQN,
               tgt_net: dqn_model.DQN,
