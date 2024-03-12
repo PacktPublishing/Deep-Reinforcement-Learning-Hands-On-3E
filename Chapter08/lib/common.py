@@ -170,9 +170,6 @@ def setup_ignite(
         tuner_reward_episode: int = 100,
         tuner_reward_min: float = -19,
 ):
-    # get rid of missing metrics warning
-    warnings.simplefilter("ignore", category=UserWarning)
-
     handler = ptan_ignite.EndOfEpisodeHandler(
         exp_source, bound_avg_reward=params.stop_reward)
     handler.attach(engine)
@@ -265,10 +262,7 @@ def tune_params(
     search_space = dict(BASE_SPACE)
     if extra_space is not None:
         search_space.update(extra_space)
-
-    config = tune.TuneConfig(
-        num_samples=samples,
-    )
+    config = tune.TuneConfig(num_samples=samples)
 
     def objective(config: dict, device: torch.device) -> dict:
         keys = dataclasses.asdict(base_params).keys()
