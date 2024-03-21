@@ -2,6 +2,7 @@
 import csv
 import argparse
 import ballpark
+import collections
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,11 +20,15 @@ if __name__ == "__main__":
     parser.add_argument("--max-dt", type=float, default=None, help="Maximum length in hours, default=No limit")
     parser.add_argument("--use-steps", action="store_true", default=False,
                         help="Use steps for comparison instead of time")
+    parser.add_argument("--sma", type=int, default=None, help="Apply SMA with given window, default=disabled")
     args = parser.parse_args()
 
     data = []
     max_steps = None
     max_hours = None
+    deque = None
+    if args.sma is not None:
+        deque = collections.deque(maxlen=args.sma)
 
     for file_name in args.input:
         hours = []
@@ -41,7 +46,11 @@ if __name__ == "__main__":
                 hours.append(h)
                 s = float(row["Step"])
                 steps.append(s)
-                vals.append(float(row["Value"]))
+                v = float(row["Value"])
+                if deque is not None:
+                    deque.append(v)
+                    v = sum(deque) / len(deque)
+                vals.append(v)
                 if max_steps is None or max_steps < s:
                     max_steps = s
                 if max_hours is None or max_hours < h:

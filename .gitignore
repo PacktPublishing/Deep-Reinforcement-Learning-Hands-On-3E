@@ -1,2 +1,5 @@
 .idea
 .DS_Store
+runs
+video
+__pycache__
