@@ -11,3 +11,6 @@ tensorboard==2.15.1
 mypy==1.8.0
 #ptan==0.7
 stable-baselines3==2.2.1
+torchrl==0.3.0
+ray[tune]==2.9.3
+pytest
