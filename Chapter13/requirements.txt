@@ -1,0 +1,5 @@
+textworld==1.6.1
+transformers==4.39.3
+sentence-transformers==2.6.1
+langchain-openai==0.1.2
+langchain==0.1.15
