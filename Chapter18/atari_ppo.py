@@ -18,7 +18,7 @@ NAME = "atari"
 
 HYPERPARAMS = {
     'ppo': SimpleNamespace(**{
-        'env_name':         "ALE/Seaquest-v5", #"SeaquestNoFrameskip-v4",
+        'env_name':         "SeaquestNoFrameskip-v4",
         'stop_reward':      None,
         'stop_test_reward': 10000,
         'run_name':         'ppo',
