@@ -17,7 +17,6 @@ PERCENTILE = 30
 GAMMA = 0.9
 
 
-
 class DiscreteOneHotWrapper(gym.ObservationWrapper):
     def __init__(self, env: gym.Env):
         super(DiscreteOneHotWrapper, self).__init__(env)
@@ -118,7 +117,7 @@ if __name__ == "__main__":
     net = Net(obs_size, HIDDEN_SIZE, n_actions)
     objective = nn.CrossEntropyLoss()
     optimizer = optim.Adam(params=net.parameters(), lr=0.001)
-    writer = SummaryWriter(comment="-frozenlake-tweaked")
+    writer = SummaryWriter(comment="-frozenlake-nonslippery")
 
     full_batch = []
     for iter_no, batch in enumerate(iterate_batches(
