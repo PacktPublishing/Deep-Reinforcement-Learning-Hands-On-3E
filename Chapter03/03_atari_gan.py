@@ -44,12 +44,11 @@ class InputWrapper(gym.ObservationWrapper):
         old_space = self.observation_space
         assert isinstance(old_space, spaces.Box)
         self.observation_space = spaces.Box(
-            self.observation(old_space.low),
-            self.observation(old_space.high),
-            dtype=np.float32)
+            self.observation(old_space.low), self.observation(old_space.high),
+            dtype=np.float32
+        )
 
-    def observation(self, observation: gym.core.ObsType) -> \
-            gym.core.ObsType:
+    def observation(self, observation: gym.core.ObsType) -> gym.core.ObsType:
         # resize image
         new_obs = cv2.resize(
             observation, (IMAGE_SIZE, IMAGE_SIZE))
@@ -118,10 +117,8 @@ class Generator(nn.Module):
         return self.pipe(x)
 
 
-def iterate_batches(
-        envs: tt.List[gym.Env],
-        batch_size: int = BATCH_SIZE
-) -> tt.Generator[torch.Tensor, None, None]:
+def iterate_batches(envs: tt.List[gym.Env],
+                    batch_size: int = BATCH_SIZE) -> tt.Generator[torch.Tensor, None, None]:
     batch = [e.reset()[0] for e in envs]
     env_gen = iter(lambda: random.choice(envs), None)
 
@@ -142,8 +139,7 @@ def iterate_batches(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dev", default="cpu",
-                        help="Device name, default=cpu")
+    parser.add_argument("--dev", default="cpu", help="Device name, default=cpu")
     args = parser.parse_args()
 
     device = torch.device(args.dev)
@@ -157,12 +153,8 @@ if __name__ == "__main__":
     net_gener = Generator(output_shape=shape).to(device)
 
     objective = nn.BCELoss()
-    gen_optimizer = optim.Adam(
-        params=net_gener.parameters(), lr=LEARNING_RATE,
-        betas=(0.5, 0.999))
-    dis_optimizer = optim.Adam(
-        params=net_discr.parameters(), lr=LEARNING_RATE,
-        betas=(0.5, 0.999))
+    gen_optimizer = optim.Adam(params=net_gener.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
+    dis_optimizer = optim.Adam(params=net_discr.parameters(), lr=LEARNING_RATE, betas=(0.5, 0.999))
     writer = SummaryWriter()
 
     gen_losses = []
@@ -175,8 +167,7 @@ if __name__ == "__main__":
 
     for batch_v in iterate_batches(envs):
         # fake samples, input is 4D: batch, filters, x, y
-        gen_input_v = torch.FloatTensor(
-            BATCH_SIZE, LATENT_VECTOR_SIZE, 1, 1)
+        gen_input_v = torch.FloatTensor(BATCH_SIZE, LATENT_VECTOR_SIZE, 1, 1)
         gen_input_v.normal_(0, 1)
         gen_input_v = gen_input_v.to(device)
         batch_v = batch_v.to(device)
@@ -204,17 +195,12 @@ if __name__ == "__main__":
         if iter_no % REPORT_EVERY_ITER == 0:
             dt = time.time() - ts_start
             log.info("Iter %d in %.2fs: gen_loss=%.3e, dis_loss=%.3e",
-                     iter_no, dt, np.mean(gen_losses),
-                     np.mean(dis_losses))
+                     iter_no, dt, np.mean(gen_losses), np.mean(dis_losses))
             ts_start = time.time()
-            writer.add_scalar(
-                "gen_loss", np.mean(gen_losses), iter_no)
-            writer.add_scalar(
-                "dis_loss", np.mean(dis_losses), iter_no)
+            writer.add_scalar("gen_loss", np.mean(gen_losses), iter_no)
+            writer.add_scalar("dis_loss", np.mean(dis_losses), iter_no)
             gen_losses = []
             dis_losses = []
         if iter_no % SAVE_IMAGE_EVERY_ITER == 0:
-            writer.add_image("fake", vutils.make_grid(
-                gen_output_v.data[:64], normalize=True), iter_no)
-            writer.add_image("real", vutils.make_grid(
-                batch_v.data[:64], normalize=True), iter_no)
+            writer.add_image("fake", vutils.make_grid(gen_output_v.data[:64], normalize=True), iter_no)
+            writer.add_image("real", vutils.make_grid(batch_v.data[:64], normalize=True), iter_no)
