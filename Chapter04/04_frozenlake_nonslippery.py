@@ -109,8 +109,7 @@ def filter_batch(batch: tt.List[Episode], percentile: float) -> \
 
 if __name__ == "__main__":
     random.seed(12345)
-    env = DiscreteOneHotWrapper(gym.make("FrozenLake-v1",
-                                         is_slippery=False))
+    env = DiscreteOneHotWrapper(gym.make("FrozenLake-v1", is_slippery=False))
     obs_size = env.observation_space.shape[0]
     n_actions = env.action_space.n
 

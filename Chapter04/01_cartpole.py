@@ -16,8 +16,7 @@ PERCENTILE = 70
 
 
 class Net(nn.Module):
-    def __init__(self, obs_size: int, hidden_size: int,
-                 n_actions: int):
+    def __init__(self, obs_size: int, hidden_size: int, n_actions: int):
         super(Net, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(obs_size, hidden_size),
@@ -40,8 +39,7 @@ class Episode:
     steps: tt.List[EpisodeStep]
 
 
-def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
-        tt.Generator[tt.List[Episode], None, None]:
+def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> tt.Generator[tt.List[Episode], None, None]:
     batch = []
     episode_reward = 0.0
     episode_steps = []
@@ -79,10 +77,8 @@ def filter_batch(batch: tt.List[Episode], percentile: float) -> \
     for episode in batch:
         if episode.reward < reward_bound:
             continue
-        train_obs.extend(map(lambda step: step.observation,
-                             episode.steps))
-        train_act.extend(map(lambda step: step.action,
-                             episode.steps))
+        train_obs.extend(map(lambda step: step.observation, episode.steps))
+        train_act.extend(map(lambda step: step.action, episode.steps))
 
     train_obs_v = torch.FloatTensor(np.vstack(train_obs))
     train_act_v = torch.LongTensor(train_act)
@@ -102,10 +98,8 @@ if __name__ == "__main__":
     optimizer = optim.Adam(params=net.parameters(), lr=0.01)
     writer = SummaryWriter(comment="-cartpole")
 
-    for iter_no, batch in enumerate(
-            iterate_batches(env, net, BATCH_SIZE)):
-        obs_v, acts_v, reward_b, reward_m = \
-            filter_batch(batch, PERCENTILE)
+    for iter_no, batch in enumerate(iterate_batches(env, net, BATCH_SIZE)):
+        obs_v, acts_v, reward_b, reward_m = filter_batch(batch, PERCENTILE)
         optimizer.zero_grad()
         action_scores_v = net(obs_v)
         loss_v = objective(action_scores_v, acts_v)

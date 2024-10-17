@@ -87,8 +87,7 @@ def iterate_batches(env: gym.Env, net: Net, batch_size: int) -> \
 
 
 def filter_batch(batch: tt.List[Episode], percentile: float) -> \
-        tt.Tuple[tt.List[Episode], tt.List[np.ndarray],
-                 tt.List[int], float]:
+        tt.Tuple[tt.List[Episode], tt.List[np.ndarray], tt.List[int], float]:
     reward_fun = lambda s: s.reward * (GAMMA ** len(s.steps))
     disc_rewards = list(map(reward_fun, batch))
     reward_bound = np.percentile(disc_rewards, percentile)
@@ -99,10 +98,8 @@ def filter_batch(batch: tt.List[Episode], percentile: float) -> \
 
     for example, discounted_reward in zip(batch, disc_rewards):
         if discounted_reward > reward_bound:
-            train_obs.extend(map(lambda step: step.observation,
-                                 example.steps))
-            train_act.extend(map(lambda step: step.action,
-                                 example.steps))
+            train_obs.extend(map(lambda step: step.observation, example.steps))
+            train_act.extend(map(lambda step: step.action, example.steps))
             elite_batch.append(example)
 
     return elite_batch, train_obs, train_act, reward_bound
@@ -120,12 +117,9 @@ if __name__ == "__main__":
     writer = SummaryWriter(comment="-frozenlake-tweaked")
 
     full_batch = []
-    for iter_no, batch in enumerate(iterate_batches(
-            env, net, BATCH_SIZE)):
-        reward_mean = float(np.mean(list(map(
-            lambda s: s.reward, batch))))
-        full_batch, obs, acts, reward_bound = \
-            filter_batch(full_batch + batch, PERCENTILE)
+    for iter_no, batch in enumerate(iterate_batches(env, net, BATCH_SIZE)):
+        reward_mean = float(np.mean(list(map(lambda s: s.reward, batch))))
+        full_batch, obs, acts, reward_bound = filter_batch(full_batch + batch, PERCENTILE)
         if not full_batch:
             continue
         obs_v = torch.FloatTensor(np.vstack(obs))
